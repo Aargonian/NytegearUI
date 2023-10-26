@@ -1,0 +1,20 @@
+[package]
+name = "nytegearui"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+name = "nytegearui"
+path = "src/lib.rs"
+
+[[bin]]
+name = "demo"
+path = "src/main.rs"
+
+[dependencies]
+winit = "0.29"
+glutin = "0.31.0"
+gl = "0.14"
+raw-gl-context = { git = "https://github.com/Aargonian/raw-gl-context.git", branch = "master" }
