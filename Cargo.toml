@@ -9,10 +9,6 @@ edition = "2021"
 name = "nytegearui"
 path = "src/lib.rs"
 
-[[bin]]
-name = "demo"
-path = "src/main.rs"
-
 [dependencies]
 winit = "0.29"
 glutin = "0.31.0"

@@ -1,16 +1,23 @@
+use std::collections::VecDeque;
+
 use winit::{
-    event::{Event, WindowEvent},
     event_loop::{ControlFlow, EventLoop},
     window::{Window as WinitWindow, WindowBuilder},
 };
+use winit::event::{Event, WindowEvent};
+use winit::platform::pump_events::EventLoopExtPumpEvents;
 
 use crate::backends::OpenGLRenderer;
+use crate::widget::color::Color;
 
 pub trait Renderer
 {
     fn draw_pixel(&mut self, x: u32, y: u32, value: u32);
     fn draw_rect(&mut self, x: u32, y: u32, width: u32, height: u32, value: u32);
-    fn fill_rect(&mut self, x: u32, y: u32, width: u32, height: u32, value: u32);
+    fn fill_rect(&mut self, x: u32, y: u32, width: u32, height: u32, color: Color);
+    fn clear_background(&mut self, background_color: Color);
+    fn begin(&mut self);
+    fn end(&mut self);
 }
 
 pub trait Widget
@@ -47,6 +54,51 @@ impl Window
         } else {
             panic!("FUCK")
         }
+    }
+
+    pub fn run(&mut self) {
+        let timeout = None;
+        let mut exit_loop = false;
+        let mut event_queue = VecDeque::new();
+
+        while !exit_loop {
+            self.event_loop.pump_events(timeout, |event, elwt| {
+                match event {
+                    Event::WindowEvent {
+                        event: WindowEvent::CloseRequested,
+                        window_id,
+                    } if window_id == self.window.id() => {
+                        elwt.exit();
+                        exit_loop = true;
+                    }
+
+                    _ => event_queue.push_back(event)
+                }
+            });
+
+            while let Some(event) = event_queue.pop_front() {
+                match event {
+                    Event::AboutToWait => {
+                        self.window.request_redraw();
+                    }
+
+                    Event::WindowEvent {
+                        event: WindowEvent::RedrawRequested,
+                        ..
+                    } => {
+                        self.redraw();
+                    }
+
+                    _ => (),
+                }
+            }
+        }
+    }
+
+    fn redraw(&mut self) {
+        self.renderer.begin();
+        self.renderer.clear_background(Color::new(255, 51, 25, 128));
+        self.renderer.end();
     }
 
     fn resolve_rendering_backend(window: &WinitWindow) -> Option<Box<dyn Renderer>>
