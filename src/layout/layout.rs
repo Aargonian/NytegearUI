@@ -1,10 +1,15 @@
-use crate::layout::{Position, Size, Spacing};
+use crate::layout::{AbsolutePosition, AbsoluteSize, AbsoluteSpacing, Position, Size, Spacing};
 
 /// Represent the layout details of a widget, abstractly. Contains all the details of where a widget
 /// prefers to be positioned (if applicable), alignment, sizing, border, etc.
 ///
 /// Elements with no specified size will be assumed to be containers for their children. They can
 /// still have their own padding and margin.
+///
+/// Min/Max size are handled identically to how box-sizing: border box would in a browser
+/// environment. Some invalid cases include things like having a parent with no size, but a child
+/// that uses a percentage size. In such a case the problem is chicken-and-egg since the size of
+/// both depends on each other.
 #[derive(Copy, Clone, Debug, Default)]
 pub struct Layout {
     position: Option<Position>,
@@ -13,6 +18,13 @@ pub struct Layout {
     desired_size: Option<Size>,
     maximum_size: Option<Size>,
     minimum_size: Option<Size>,
+}
+
+pub struct AbsoluteLayout {
+    position: AbsolutePosition,
+    margin: AbsoluteSpacing,
+    padding: AbsoluteSpacing,
+    size: AbsoluteSize,
 }
 
 /*

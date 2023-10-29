@@ -7,6 +7,12 @@ pub enum Position {
     Relative(f64, f64),
 }
 
+#[derive(Copy, Clone, Debug, Default, PartialEq, Eq)]
+pub struct AbsolutePosition {
+    x: u32,
+    y: u32,
+}
+
 impl Default for Position {
     fn default() -> Self {
         Self::Absolute(0, 0)
@@ -22,5 +28,20 @@ impl From<(u32, u32)> for Position {
 impl From<(f64, f64)> for Position {
     fn from(value: (f64, f64)) -> Self {
         Self::Relative(value.0, value.1)
+    }
+}
+
+impl From<(u32, u32)> for AbsolutePosition {
+    fn from(value: (u32, u32)) -> Self {
+        Self {
+            x: value.0,
+            y: value.1,
+        }
+    }
+}
+
+impl From<AbsolutePosition> for Position {
+    fn from(value: AbsolutePosition) -> Self {
+        Self::Absolute(value.x, value.y)
     }
 }

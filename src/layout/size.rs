@@ -24,7 +24,7 @@ impl From<(f64, f64)> for Size {
     }
 }
 
-#[derive(Default, Clone, Copy, Debug, PartialEq)]
+#[derive(Default, Clone, Copy, Debug, PartialEq, Eq)]
 pub struct AbsoluteSize {
     pub width: u32,
     pub height: u32,
