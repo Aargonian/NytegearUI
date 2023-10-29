@@ -1,7 +1,10 @@
-pub use util::*;
+pub use color::*;
+pub use widget::*;
+pub use style::*;
 
-pub mod color;
-pub mod style;
-pub mod widget;
-mod util;
+mod color;
+mod style;
+mod widget;
+pub(crate) mod window;
+pub(crate) mod renderer;
 

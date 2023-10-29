@@ -2,17 +2,16 @@
 #![allow(dead_code)]
 #![allow(unused_variables)]
 
-use nytegearui::widget::{
-    Position, Sizing,
-    style::Style,
-};
-use nytegearui::window::{Renderer, Widget};
-use nytegearui::window::Window;
+use winit::dpi::Position;
+use nytegearui::widget::color::Color;
+use nytegearui::widget::style::Style;
+use nytegearui::widget::{Renderer, Widget};
 
 pub struct RectangleWidget {
     position: Position,
-    sizing: Sizing,
+    sizing: String,
     style: Style,
+    color: Color,
 }
 
 impl RectangleWidget {
@@ -24,59 +23,33 @@ impl RectangleWidget {
                 ..Default::default()
             },
             style: Default::default(),
+            color: Default::default(),
         }
     }
 }
 
 impl Widget for RectangleWidget {
-    fn draw(&self, renderer: &mut dyn Renderer) {
-        //renderer.set_style();
-        /*
-        renderer.fill_rect(self.position.x,
-                           self.position.y,
-                           self.sizing.size.width,
-                           self.sizing.size.height,
+    fn draw(&self, renderer: &mut Box<dyn Renderer>) {
+        renderer.fill_rect(self.layout.position.x,
+                           self.layout.position.y,
+                           250,
+                           250,
                            self.style.foreground_color);
-
-         */
     }
 }
 
 fn main() {
-    let window = Window::new();
+    let mut window = Window::new("Test Window", (500, 500).into());
 
-    let rect_widget = RectangleWidget::new(50, 50);
-    /*
-    event_loop.run(move |event, window_target| {
+    let mut rect_widget = RectangleWidget::new(50, 50);
+    rect_widget.position = (250, 250).into();
+    rect_widget.sizing = Sizing {
+        size: (50, 50).into(),
+        ..Default::default()
+    };
+    rect_widget.color = Color::new(255, 255, 0, 0);
 
-        match event {
-            Event::WindowEvent {
-                event: winit::event::WindowEvent::CloseRequested,
-                ..
-            } => {
-                window_target.exit();
-            }
-            Event::WindowEvent {
-                event: WindowEvent::RedrawRequested,
-                ..
-            } => {
-                unsafe {
-                    context.make_current();
-                }
-
-                unsafe {
-                    gl::ClearColor(0.2, 0.1, 0.5, 1.0);
-                    gl::Clear(gl::COLOR_BUFFER_BIT);
-                }
-
-                context.swap_buffers();
-
-                unsafe {
-                    context.make_not_current();
-                }
-            }
-            _ => {}
-        }
-    }).expect("TODO: panic message");
-    */
+    window.add_widget(Box::new(rect_widget));
+    window.set_visible(true);
+    window.run();
 }

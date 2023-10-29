@@ -1,84 +1,23 @@
-use crate::widget::Dimension;
+use crate::layout::{Position, Size, Spacing};
 
-#[derive(Default, Clone, Copy, Debug, PartialEq)]
-pub struct Size {
-    pub width: Dimension,
-    pub height: Dimension,
-}
-
-impl From<(u32, u32)> for Size {
-    fn from(value: (u32, u32)) -> Size {
-        Size {
-            width: Dimension::Pixel(value.0),
-            height: Dimension::Pixel(value.1),
-        }
-    }
-}
-
-impl From<(f64, f64)> for Size {
-    fn from(value: (f64, f64)) -> Size {
-        Size {
-            width: Dimension::Percent(value.0),
-            height: Dimension::Percent(value.1),
-        }
-    }
-}
-
-#[derive(Default, Clone, Copy, Debug, PartialEq)]
-pub struct AbsoluteSize {
-    pub width: u32,
-    pub height: u32,
-}
-
-impl From<AbsoluteSize> for Size {
-    fn from(value: AbsoluteSize) -> Size {
-        Size {
-            width: Dimension::Pixel(value.width),
-            height: Dimension::Pixel(value.height),
-        }
-    }
-}
-
-impl From<(u32, u32)> for AbsoluteSize {
-    fn from(value: (u32, u32)) -> AbsoluteSize {
-        AbsoluteSize {
-            width: value.0,
-            height: value.1,
-        }
-    }
-}
-
-#[derive(Default, Clone, Copy, Debug, PartialEq)]
-pub struct Margin {
-    pub top: Dimension,
-    pub right: Dimension,
-    pub bottom: Dimension,
-    pub left: Dimension,
-}
-
-#[derive(Default, Clone, Copy, Debug, PartialEq)]
-pub struct Padding {
-    pub top: Dimension,
-    pub right: Dimension,
-    pub bottom: Dimension,
-    pub left: Dimension,
-}
-
-/// The Sizing and Positional information for a Widget
+/// Represent the layout details of a widget, abstractly. Contains all the details of where a widget
+/// prefers to be positioned (if applicable), alignment, sizing, border, etc.
 ///
-/// Use this struct to position your widget within the parent element and provide sizing hints for
-/// the layout engine. Positional information may be ignored by the layout engine depending on the
-/// layout used by the parent widget, and sizing information will be used for a hint-style system.
-#[derive(Default, Clone, Debug, PartialEq)]
-pub struct Sizing {
-    pub margin: Margin,
-    pub padding: Padding,
-    pub min_size: Option<Size>,
-    pub max_size: Option<Size>,
-    pub size: Size,
+/// Elements with no specified size will be assumed to be containers for their children. They can
+/// still have their own padding and margin.
+#[derive(Copy, Clone, Debug, Default)]
+pub struct Layout {
+    position: Option<Position>,
+    margin: Option<Spacing>,
+    padding: Option<Spacing>,
+    desired_size: Option<Size>,
+    maximum_size: Option<Size>,
+    minimum_size: Option<Size>,
 }
 
-impl Sizing {
+/*
+
+impl Layout {
     /// Calculates the size this widget will take up given an available amount of space.
     ///
     /// This calculation will use a combination of the margin, padding, and sizing values to
@@ -96,7 +35,7 @@ impl Sizing {
     /// The returned size from this function will always have a `None` value for the `min_size` and
     /// `max_size` fields. The returned `Sizing` object will have the margin, padding, and inner
     /// size value to reserve for this widget.
-    pub fn calculate_sizing(&self, available_space: AbsoluteSize) -> Sizing {
+    pub fn calculate_layout(&self, available_space: AbsoluteSize) -> Sizing {
         // Helper function for converting dimensions to u32
         fn calculate_dimension_size(dimension: Dimension, available_space: u32) -> u32 {
             match dimension {
@@ -195,3 +134,5 @@ impl Sizing {
         }
     }
 }
+
+ */

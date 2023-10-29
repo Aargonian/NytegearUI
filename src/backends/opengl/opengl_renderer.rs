@@ -2,11 +2,13 @@ use gl::types::GLfloat;
 use raw_gl_context::{GlConfig, GlContext};
 use winit::window::Window as WinitWindow;
 
-use crate::widget::color::Color;
-use crate::window::Renderer;
+use crate::backends::opengl::shader::Shader;
+use crate::Renderer;
+use crate::widget::Color;
 
 pub struct OpenGLRenderer {
     context: GlContext,
+    shader: Shader,
 }
 
 impl OpenGLRenderer
@@ -26,9 +28,35 @@ impl OpenGLRenderer
             }
         };
 
-        Some(OpenGLRenderer {
+        let vertex_src = include_str!("shaders/ui_basic.vert");
+        let fragment_src = include_str!("shaders/ui_basic.frag");
+
+        // Create shader program
+        let shader = match Shader::new(vertex_src, fragment_src) {
+            Ok(shader) => shader,
+            Err(e) => {
+                eprintln!("Shader creation failed: {}", e);
+                return None;
+            }
+        };
+
+        let renderer = OpenGLRenderer {
             context: gl_context,
-        })
+            shader,  // Include shader in your struct
+        };
+
+        Some(renderer)
+    }
+
+    fn begin(&mut self) {
+        unsafe {
+            self.context.make_current();
+            gl::UseProgram(self.shader.program());
+        }
+    }
+
+    fn end(&mut self) {
+        // Do Nothing for now
     }
 }
 
@@ -42,9 +70,7 @@ impl Renderer for OpenGLRenderer
         todo!()
     }
 
-    fn fill_rect(&mut self, x: u32, y: u32, width: u32, height: u32, color: Color) {
-        todo!()
-    }
+    fn fill_rect(&mut self, x: u32, y: u32, width: u32, height: u32, color: Color) {}
 
     fn clear_background(&mut self, background_color: Color) {
         let red: GLfloat = ((background_color.r as f64) / 255.0) as GLfloat;

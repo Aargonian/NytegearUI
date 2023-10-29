@@ -1,11 +1,15 @@
-use crate::widget::Position;
+use crate::layout::{Layout, Position};
+use crate::Renderer;
 use crate::widget::style::Style;
-use crate::window::Renderer;
 
-trait Widget {
+pub trait Widget {
     fn style(&self) -> Option<Style>;
+
+    fn layout(&self) -> Layout;
+
     fn position(&self) -> Position;
-    fn draw(&self, renderer: &dyn Renderer);
+
+    fn draw(&self, renderer: &mut dyn Renderer);
 }
 
 

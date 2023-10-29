@@ -8,22 +8,10 @@ use winit::event::{Event, WindowEvent};
 use winit::platform::pump_events::EventLoopExtPumpEvents;
 
 use crate::backends::OpenGLRenderer;
+use crate::layout::Size;
+use crate::Renderer;
 use crate::widget::color::Color;
-
-pub trait Renderer
-{
-    fn draw_pixel(&mut self, x: u32, y: u32, value: u32);
-    fn draw_rect(&mut self, x: u32, y: u32, width: u32, height: u32, value: u32);
-    fn fill_rect(&mut self, x: u32, y: u32, width: u32, height: u32, color: Color);
-    fn clear_background(&mut self, background_color: Color);
-    fn begin(&mut self);
-    fn end(&mut self);
-}
-
-pub trait Widget
-{
-    fn draw(&self, renderer: &mut dyn Renderer);
-}
+use crate::widget::Widget;
 
 pub struct Window
 {
@@ -33,14 +21,21 @@ pub struct Window
     children: Vec<Box<dyn Widget>>,
 }
 
+impl Window {
+    pub fn set_visible(&self, p0: bool) {
+        // No-op
+    }
+}
+
 impl Window
 {
-    pub fn new() -> Self {
+    pub fn new(title: &str, _size: Size) -> Self {
         // Construct the EventLoop for Winit
         let event_loop = EventLoop::new().unwrap();
         event_loop.set_control_flow(ControlFlow::Wait);
 
-        let window = WindowBuilder::new().build(&event_loop).unwrap();
+        let builder = WindowBuilder::new().with_title(title);
+        let window = builder.build(&event_loop).unwrap();
 
 
         // Determine the available rendering backend
@@ -98,7 +93,15 @@ impl Window
     fn redraw(&mut self) {
         self.renderer.begin();
         self.renderer.clear_background(Color::new(255, 51, 25, 128));
+
+        for widget in self.children.iter() {
+            widget.draw(&mut *self.renderer);
+        }
         self.renderer.end();
+    }
+
+    pub fn add_widget(&mut self, widget: Box<dyn Widget>) {
+        self.children.push(widget);
     }
 
     fn resolve_rendering_backend(window: &WinitWindow) -> Option<Box<dyn Renderer>>
